@@ -12,8 +12,9 @@ FIELDS = {
     'security_calendar': ['asset', 'day', 'open_utc', 'close_utc', 'lot', 'max_volume', 'lower', 'upper'],
     'corporate_actions': ['action', 'asset', 'kind', 'known', 'record', 'ex_day', 'pay_day', 'rate'],
     'quotes': ['id', 'asset', 'for_day', 'known', 'price', 'revises'],
-    'execution_tape': ['fill', 'day', 'time', 'asset', 'side', 'shares', 'price', 'fee', 'settle'],
+    'execution_tape': ['fill', 'day', 'time', 'asset', 'side', 'shares', 'price', 'fee', 'settle', 'strategy'],
     'sessions': ['day', 'decision_utc', 'nav_utc', 'benchmark_level'],
+    'strategy_profiles': ['strategy', 'target_timing'],
 }
 
 
@@ -36,9 +37,14 @@ class InputBundleTest(unittest.TestCase):
         slots = {row['day']: row for row in records}
         _, records = read_table(DATA, 'execution_tape')
         fills = {row['fill']: row for row in records}
+        _, records = read_table(DATA, 'strategy_profiles')
+        strategies = {row['strategy']: row for row in records}
         self.assertGreater(notices['I2']['known'], '2026-05-18T07:00:00Z')
         self.assertEqual(actions['CA1']['ex_day'], slots['2026-05-18']['day'])
         self.assertGreater(actions['CA2']['pay_day'], fills['F4']['day'])
+        self.assertTrue(all(row['strategy'] in strategies for row in fills.values()))
+        self.assertLess(fills['F5']['day'], notices['I1']['effective'])
+        self.assertNotEqual(fills['F5']['strategy'], fills['F3']['strategy'])
 
 
 if __name__ == "__main__":
