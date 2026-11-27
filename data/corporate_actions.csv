@@ -1,0 +1,3 @@
+action,asset,kind,known,record,ex_day,pay_day,rate
+CA1,X,split,2026-05-14T07:30:00Z,2026-05-15,2026-05-18,2026-05-18,2
+CA2,Y,cash_div,2026-05-14T07:30:00Z,2026-05-18,2026-05-19,2026-05-21,0.60
